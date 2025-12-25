@@ -1,0 +1,12 @@
+.App {
+  min-height: 100vh;
+  text-align: center;
+  font-family:'Courier New', Courier, monospace;
+  font-size: xx-large;
+  color: rgb(28, 65, 167);
+  background: linear-gradient(
+    to bottom,
+    rgb(134, 193, 231),
+    rgb(255, 255, 255)
+  );
+}
