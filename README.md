@@ -1,6 +1,5 @@
 # Hawk
-Bond market coverage. A monetary hawk is a central bank economist advocating inflation control via rate policy.
-
+Bond market coverage app. Minimal usage of AI tools to preserve control of code base and optimize learning.
 <img src="HawkLogo.png" alt="Hawk" width="50%">
 
 # High-level architecture overview
