@@ -4,4 +4,4 @@ Bond market coverage. A monetary hawk is a central bank economist advocating inf
 <img src="HawkLogo.png" alt="Hawk" width="50%">
 
 # High-level architecture overview
-<img src="Miscellanous/Hawk_Architecture_Overview.svg" alt="Hawk" width="100%">
+<img src="Miscellanous/Centralbank_Architecture_Overview.svg" alt="Hawk" width="100%">
