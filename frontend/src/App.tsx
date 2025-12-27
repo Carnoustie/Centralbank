@@ -17,17 +17,17 @@ function DropDown(props:any){
   const changeCountry = (event: any) => { setCountry(event.target.value)}
 
 
-    async function getYieldCurve(countryName: any){
-      let apiPromise = await fetch('localhost:8000/getYieldCurve', {
-        method: 'GET', 
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(countryName)
-      })
+  async function getYieldCurve(countryName: any){
 
-      console.log(apiPromise.json())
-    }
+    console.log("Hit here")
+
+    const response = await fetch('http://localhost:8000/getYieldCurve')
+
+    const result = await response.text();
+
+    console.log(result)
+  
+  }
 
   return(
     <div className='App'>
