@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -51,12 +52,28 @@ func getYieldCurve(w http.ResponseWriter, r* http.Request){
 	fmt.Println("\nHit API\n")
 
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	
+	country := strings.Split(r.RequestURI, "=")[1]
+
+	fmt.Print("country: "+ country)
+
+	fmt.Printf("r.RequestURI: %v\n", r.RequestURI)
 
 	cc,_ := io.ReadAll(r.Body)
 	
 	fmt.Printf("\ncc %b", cc)
 
-	url := fmt.Sprintf("https://api.riksbank.se/swea/v1/Observations/%sGVB%sY/1987-01-05", "GB", "10")
+	appendString := ""
+
+	if(country=="SE"){
+		appendString = "YC"
+	}else{
+		appendString = "Y"
+	}
+
+	fmt.Println("AppendString: " + appendString)
+
+	url := fmt.Sprintf("https://api.riksbank.se/swea/v1/Observations/%sGVB%s%s/1987-01-05", country, "10", appendString)
 	res, _ := http.Get(url)
 	data := res.Body
 
@@ -64,9 +81,9 @@ func getYieldCurve(w http.ResponseWriter, r* http.Request){
 
 	buffer, _ = io.ReadAll(data)
 
-	fmt.Printf(string(buffer))
+	//fmt.Printf(string(buffer))
 
-	io.WriteString(w, "Yield curve is on its way!")
+	io.WriteString(w, string(buffer))
 
 }
 

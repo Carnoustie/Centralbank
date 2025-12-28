@@ -8,44 +8,62 @@ import {useState, useContext, createContext, useEffect} from 'react'
 
 
 
-function DropDown(props:any){
+
+function Home(props: any){
 
   const [country, setCountry] = useState('')
 
-  const countries = ['Sweden', 'Denmark', 'Norway', 'Finland']
+  const [yields, setYields] = useState<yieldSample[]>([])
+
+  const countries = ['Sweden', 'Denmark', 'Norway', 'Finland', "United States", "Great Britain", "Germany", "France", "Japan", "Netherlands", "Europe"]
 
   const changeCountry = (event: any) => { setCountry(event.target.value)}
 
+
+  const countryCodes: Record<string, string> = {
+    "Finland":"FI",
+    "Denmark":"DK",
+    "Sweden":"SE",
+    "Norway": "NO",
+    "United States":"US",
+    "Great Britain":"GB",
+    "Germany":"DE",
+    "France":"FR",
+    "Japan":"JP",
+    "Netherlands":"NL",
+    "Europe":"EM"
+  }
+
+
+  type yieldSample = {
+    value: number;
+    date: number;
+  }
 
   async function getYieldCurve(countryName: any){
 
     console.log("Hit here")
 
-    const response = await fetch('http://localhost:8000/getYieldCurve')
+    const code = countryCodes[country]
 
-    const result = await response.text();
+    console.log(country)
 
-    console.log(result)
+    const response = await fetch(`http://localhost:8000/getYieldCurve?countrycode=${encodeURIComponent(code)}`)
+
+    const result = await response.json();
+
+    const formattedData = result.map((item: any) => ({
+      ...item,
+      date: new Date(item.date).getTime()
+    }));
+
+
+
+    setYields(formattedData)
+    console.log(formattedData)
+    // console.log(result.map( (yieldTuple: any) => yieldTuple.value))
   
   }
-
-  return(
-    <div className='App'>
-      <select value = {country} onChange= {changeCountry}>
-        {countries.map((c) => <option value={c}> {c} </option> )}
-      </select>
-      <h1>
-        Currently selecting: {country}
-      </h1>
-      <button onClick={getYieldCurve}>
-        Fetch yield curve
-      </button>
-    </div>
-  )
-}
-
-
-function Home(props: any){
 
   const data = [
     {
@@ -58,6 +76,10 @@ function Home(props: any){
     }
   ];
 
+  const selectedTicks = yields.filter((_,i)=> i%1500 ===0 ).map(d => d.date);
+
+  console.log("Selected ticks:    ", selectedTicks)
+
   return(
     <div className='App'>
       <br/>
@@ -65,15 +87,23 @@ function Home(props: any){
         Welcome to the Bond market
       </h1>
       <br/>
-      <Link to = '/DropDown'>
-        Enter Dropdown!
-      </Link>
-      <LineChart style={{ width: '100%', aspectRatio: 1.618, maxWidth: 800, margin: 'auto'}} responsive data={data}>
+      <select value = {country} onChange= {changeCountry}>
+        {countries.map((c) => <option value={c}> {c} </option> )}
+      </select>
+      <h1>
+        Currently selecting: {country}
+      </h1>
+      <button onClick={getYieldCurve}>
+        Fetch historical 10-year yields
+      </button>
+      <br/>
+      <br/>
+
+      <LineChart style={{ width: '100%', aspectRatio: 1.618, maxWidth: 800, margin: 'auto'}} responsive data={yields}>
         <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
-        <XAxis dataKey="x" type="number"/>
-        <YAxis width="auto"/>
-        <Line type="monotone" dataKey="uv" stroke="#8884d8"/>
-        <Line type="monotone" dataKey="pv" stroke="#e20f08ff"/>
+        <XAxis dataKey="date" type="number" scale= "time" tickFormatter ={ (unixTime)=> new Date(unixTime).getFullYear().toString() } ticks={selectedTicks}/>
+        <YAxis width = {40}/>
+        <Line type="monotone" dataKey="value" stroke="#d64444ff" dot={false}/>
         <RechartsDevtools/>
       </LineChart>
     </div>
@@ -88,10 +118,6 @@ function App() {
       <Route
         path='/'
         element= <Home/>
-      />
-      <Route
-        path='/DropDown'
-        element= <DropDown/>
       />
     </Routes>
     </BrowserRouter>
